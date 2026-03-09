@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CHRONOMUSE</title>
+<style>
+/* Embedded CSS from style.css */
+body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #fff0f8 0%, #ffb6d9 35%, #ff6fb3 65%, #bfa6ff 100%);
+    margin:0;
+    padding:20px;
+    min-height:100vh;
+}
+html, body{
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+}
+body.modal-open{
+    overflow: hidden;
+}
+
+/* Header */
+.top-header {
+    position: sticky;
+    top: 0;
+    z-index: 1005;
+    background: linear-gradient(135deg, rgba(255, 230, 245, 0.36) 0%, rgba(255, 245, 251, 0.32) 55%, rgba(255, 224, 242, 0.32) 100%);
+    border-bottom: 1px solid rgba(255, 212, 232, 0.6);
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin: -20px -20px 20px -20px;
+    box-shadow: 0 8px 24px rgba(255, 20, 147, 0.08);
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+.topbar-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+.topbar-star {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 140, 201, 0.95) 55%, rgba(255, 140, 201, 0.35) 100%);
+    box-shadow: 0 0 12px rgba(255, 140, 201, 1);
+    mix-blend-mode: screen;
+    animation: modal-star-float 8s ease-in-out infinite;
+}
+.top-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.top-header::before,
+.top-header::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 105, 180, 0.25), rgba(255, 105, 180, 0));
+    pointer-events: none;
+}
+
+.top-header::before {
+    top: -90px;
+    left: -60px;
+}
+
+.top-header::after {
+    display: none;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.brand:hover .brand-logo {
+    transform: scale(1.3);
+    box-shadow: 0 0 14px rgba(177, 22, 99, 0.6), 0 10px 20px rgba(255, 20, 147, 0.3);
+    outline: 2px solid rgba(177, 22, 99, 0.55);
+}
+.brand-logo:hover {
+    transform: scale(1.3);
+    box-shadow: 0 0 14px rgba(177, 22, 99, 0.6), 0 10px 20px rgba(255, 20, 147, 0.3);
+    outline: 2px solid rgba(177, 22, 99, 0.55);
+}
+
+.brand:hover .brand-title {
+    color: #ff4fae;
+    transform: scale(1.3);
+}
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.brand-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff1493;
+    margin: 0;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 4px rgba(255, 20, 147, 0.3);
+}
+
+.brand-subtitle {
+    font-size: 12px;
+    color: #ff69b4;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(255, 20, 147, 0.2);
+}
+
+.header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-btn {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 20, 147, 0.4);
+    background: linear-gradient(135deg, #ff4faf, #ffb6c1);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.3);
+}
+
+.logout-btn {
+    background: linear-gradient(135deg, #ff4f81, #ff6fb3);
+}
+
+.logout-btn:hover {
+    background: linear-gradient(135deg, #ff4f81, #ff6fb3);
+}
+
+.theme-toggle {
+    width: 48px;
+    height: 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.2);
+    margin-left: 12px;
+}
+
+.theme-toggle::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle.is-dark::before {
+    transform: translateX(24px);
+}
+
+.theme-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.theme-icon-light {
+    left: 6px;
+    opacity: 1;
+}
+
+.theme-toggle.is-dark .theme-icon-light {
+    opacity: 0;
+}
+
+.theme-icon-dark {
+    right: 6px;
+    opacity: 0;
+}
+
+.theme-toggle.is-dark .theme-icon-dark {
+    opacity: 1;
+}
+
+.welcome-user {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 248, 0.9));
+    color: #ff1493;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.2);
+    z-index: 1000;
+    animation: welcome-bounce 2s ease-in-out;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 212, 232, 0.5);
+}
+
+.welcome-float {
+    animation: welcome-bounce 2s ease-in-out;
+}
+
+/* Cards */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 248, 0.9));
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(255, 20, 147, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 212, 232, 0.3);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(255, 20, 147, 0.2);
+}
+
+.card h2 {
+    margin: 0 0 16px 0;
+    color: #ff1493;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(255, 20, 147, 0.2);
+}
+
+/* Pinned */
+.pinned-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.pinned-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff1493;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pin-icon {
+    font-size: 16px;
+}
+
+.pinned-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pinned-empty {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+.pinned-item {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1), rgba(255, 105, 180, 0.1));
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid #ff69b4;
+    transition: all 0.3s ease;
+}
+
+.pinned-item:hover {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.2), rgba(255, 105, 180, 0.2));
+    transform: translateX(4px);
+}
+
+.pinned-date {
+    font-size: 12px;
+    color: #ff69b4;
+    margin-bottom: 4px;
+}
+
+.pinned-text {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+}
+
+/* Calendar */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.nav-btn {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(255, 20, 147, 0.4);
+}
+
+.nav-btn:active {
+    transform: scale(0.95);
+}
+
+.today-btn {
+    background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.2);
+}
+
+.today-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.today-btn-small {
+    font-size: 11px;
+    padding: 4px 8px;
+}
+
+.current-month {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff1493;
+    text-shadow: 0 2px 4px rgba(255, 20, 147, 0.2);
+}
+
+.calendar-filter {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.calendar-filter label {
+    font-size: 14px;
+    color: #ff1493;
+    font-weight: 600;
+}
+
+.calendar-filter select {
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.calendar-filter select:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+}
+
+.calendar-select-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.calendar-select-btn {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.2);
+}
+
+.calendar-select-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.calendar-select-btn.is-ghost {
+    background: transparent;
+    color: #ff69b4;
+    border: 1px solid #ff69b4;
+}
+
+.calendar-select-btn.is-ghost:hover {
+    background: rgba(255, 105, 180, 0.1);
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.weekday {
+    text-align: center;
+    font-weight: bold;
+    color: #ff1493;
+    padding: 8px;
+    font-size: 12px;
+}
+
+.day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    position: relative;
+}
+
+.day:hover {
+    background: rgba(255, 105, 180, 0.2);
+    transform: scale(1.05);
+}
+
+.day.today {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.day.has-memory {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 182, 193, 0.3));
+    color: #ff1493;
+    font-weight: bold;
+}
+
+.day.has-memory::after {
+    content: "•";
+    position: absolute;
+    bottom: 2px;
+    color: #ff69b4;
+    font-size: 12px;
+}
+
+.day.multi-selected {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+}
+
+.day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.calendar-list {
+    display: none;
+}
+
+.calendar-filter-back {
+    display: none;
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+    margin-top: 16px;
+}
+
+.calendar-filter-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 20, 147, 0.4);
+}
+
+/* Memory Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 248, 0.95));
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(255, 20, 147, 0.3);
+    border: 1px solid rgba(255, 212, 232, 0.5);
+    position: relative;
+}
+
+.modal-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.modal-star {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 140, 201, 0.95) 55%, rgba(255, 140, 201, 0.35) 100%);
+    box-shadow: 0 0 12px rgba(255, 140, 201, 1);
+    mix-blend-mode: screen;
+    animation: modal-star-float 8s ease-in-out infinite;
+}
+
+.modal-content > * {
+    position: relative;
+    z-index: 1;
+}
+
+.close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #ff69b4;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-btn:hover {
+    background: rgba(255, 105, 180, 0.1);
+    transform: scale(1.1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #ff1493;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(255, 20, 147, 0.2);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #ff4f81, #ff6fb3);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.2);
+}
+
+.delete-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.memory-item {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1), rgba(255, 105, 180, 0.1));
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid #ff69b4;
+    transition: all 0.3s ease;
+}
+
+.memory-item:hover {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.2), rgba(255, 105, 180, 0.2));
+    transform: translateX(4px);
+}
+
+.memory-date {
+    font-size: 12px;
+    color: #ff69b4;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.memory-text {
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.memory-media {
+    margin-top: 8px;
+}
+
+.memory-image {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.2);
+}
+
+.memory-video {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.2);
+}
+
+.memory-audio {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.memory-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.memory-tag {
+    background: rgba(255, 105, 180, 0.2);
+    color: #ff1493;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.memory-reaction {
+    font-size: 16px;
+    margin-top: 8px;
+}
+
+/* Confirm Modal */
+.confirm-modal .modal-content {
+    max-width: 400px;
+}
+
+.confirm-modal .modal-header h2 {
+    margin: 0;
+    color: #ff1493;
+    font-size: 18px;
+}
+
+.confirm-modal p {
+    margin: 16px 0;
+    color: #333;
+    text-align: center;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-actions .action-btn {
+    min-width: 80px;
+}
+
+.modal-actions .action-btn.is-ghost {
+    background: transparent;
+    color: #ff69b4;
+    border: 1px solid #ff69b4;
+}
+
+.modal-actions .action-btn.is-ghost:hover {
+    background: rgba(255, 105, 180, 0.1);
+}
+
+/* Logout Modal */
+.logout-modal-content {
+    text-align: center;
+}
+
+.logout-modal-text {
+    margin: 16px 0;
+    color: #333;
+}
+
+.logout-modal-content .modal-actions {
+    justify-content: center;
+}
+
+.logout-btn-secondary {
+    background: transparent;
+    color: #ff69b4;
+    border: 1px solid #ff69b4;
+}
+
+.logout-btn-secondary:hover {
+    background: rgba(255, 105, 180, 0.1);
+}
+
+.logout-btn-primary {
+    background: linear-gradient(135deg, #ff4f81, #ff6fb3);
+}
+
+/* Mood Tracker Modal */
+.mood-tracker-content {
+    max-width: 800px;
+}
+
+.mood-tracker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.mood-tracker-title {
+    margin: 0;
+    color: #ff1493;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(255, 20, 147, 0.2);
+}
+
+.mood-tracker-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.mood-range-btn {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.2);
+}
+
+.mood-range-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.mood-range-btn.is-active {
+    background: linear-gradient(135deg, #ff4faf, #ffb6c1);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.mood-tracker-sub {
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #ff69b4;
+    font-weight: 600;
+}
+
+.mood-tracker-body {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.mood-tracker-chart {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.mood-tracker-legend {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mood-legend-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 240, 248, 0.8));
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(255, 212, 232, 0.3);
+}
+
+.mood-legend-card:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 248, 0.9));
+    transform: translateX(4px);
+}
+
+.mood-legend-card.is-active {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 105, 180, 0.3));
+    border-color: #ff69b4;
+}
+
+.mood-legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.mood-legend-label {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.mood-legend-count {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Add Memory Card */
+.selected-date-display {
+    margin-bottom: 16px;
+}
+
+.selected-date-display p {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #ff1493;
+    font-weight: 600;
+}
+
+.selected-date-display span {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+.file-input-wrapper {
+    margin-bottom: 16px;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-input-label {
+    display: block;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 240, 248, 0.8));
+    border: 2px dashed rgba(255, 105, 180, 0.5);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-input-label:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 248, 0.9));
+    border-color: #ff69b4;
+}
+
+.file-input-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-input-icon {
+    font-size: 24px;
+    color: #ff69b4;
+}
+
+.file-input-text {
+    font-size: 14px;
+    color: #333;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.2);
+    margin-top: 12px;
+}
+
+.tag-mood-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.tag-selector,
+.mood-selector {
+    flex: 1;
+}
+
+.tag-selector label,
+.mood-selector label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #ff1493;
+    font-weight: 600;
+}
+
+.tag-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.tag-select:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+}
+
+.custom-tag-container {
+    margin-top: 8px;
+}
+
+.mood-custom {
+    margin-top: 8px;
+}
+
+.mood-custom input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.mood-custom input:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+}
+
+textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+}
+
+.emoji-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.2);
+}
+
+.emoji-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+}
+
+.emoji-picker {
+    position: absolute;
+    bottom: 40px;
+    right: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 248, 0.95));
+    border: 1px solid rgba(255, 212, 232, 0.5);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(255, 20, 147, 0.2);
+    display: none;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.emoji-picker.show {
+    display: block;
+}
+
+.emoji-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.emoji {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+.emoji:hover {
+    background: rgba(255, 105, 180, 0.2);
+    transform: scale(1.2);
+}
+
+button[type="submit"] {
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 20, 147, 0.4);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.3);
+}
+
+/* Floating Elements */
+#floatingSparkLayer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.floating-spark {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 140, 201, 0.95) 55%, rgba(255, 140, 201, 0.35) 100%);
+    box-shadow: 0 0 12px rgba(255, 140, 201, 1);
+    mix-blend-mode: screen;
+    animation: floating-spark 12s ease-in-out infinite;
+}
+
+#cursorSparkleLayer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    overflow: hidden;
+}
+
+/* Animations */
+@keyframes welcome-bounce {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+    55% { transform: translateY(0); }
+    70% { transform: translateY(-3px); }
+}
+
+@keyframes modal-star-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+    25% { transform: translateY(-10px) rotate(90deg); opacity: 1; }
+    50% { transform: translateY(-20px) rotate(180deg); opacity: 0.7; }
+    75% { transform: translateY(-10px) rotate(270deg); opacity: 1; }
+}
+
+@keyframes floating-spark {
+    0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
+    25% { transform: translateY(-20px) translateX(10px) scale(1.2); opacity: 1; }
+    50% { transform: translateY(-40px) translateX(-10px) scale(0.8); opacity: 0.7; }
+    75% { transform: translateY(-20px) translateX(10px) scale(1.1); opacity: 1; }
+}
+
+/* Dark Mode */
+.dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 35%, #0f3460 65%, #1a1a2e 100%);
+    color: #e0e0e0;
+}
+
+.dark .top-header {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 55%, rgba(15, 52, 96, 0.8) 100%);
+    border-bottom: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.dark .card {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+    border: 1px solid rgba(255, 105, 180, 0.2);
+}
+
+.dark .modal-content {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+    border: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.dark .welcome-user {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+    color: #ff69b4;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.dark .day {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+.dark .day.has-memory {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.2), rgba(255, 182, 193, 0.2));
+    color: #ff69b4;
+}
+
+.dark .file-input-label {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 33, 62, 0.8));
+    border-color: rgba(255, 105, 180, 0.3);
+}
+
+.dark textarea,
+.dark .tag-select,
+.dark .mood-custom input,
+.dark .calendar-filter select {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    border-color: rgba(255, 105, 180, 0.3);
+}
+
+.dark .mood-legend-card {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 33, 62, 0.8));
+    border-color: rgba(255, 105, 180, 0.2);
+}
+
+.dark .memory-item {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(255, 182, 193, 0.1));
+}
+
+.dark .pinned-item {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(255, 182, 193, 0.1));
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .tag-mood-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .mood-tracker-body {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .mood-tracker-legend {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .mood-legend-card {
+        flex: 1 1 45%;
+    }
+
+    .calendar-header {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .current-month {
+        order: -1;
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .calendar-filter {
+        flex-wrap: wrap;
+    }
+
+    .modal-content {
+        margin: 20px;
+        padding: 16px;
+    }
+
+    .modal-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .mood-tracker-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .welcome-user {
+        position: static;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+}
+</style>
+<script>
+    (function() {
+        const savedTheme = localStorage.getItem('cm_theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    })();
+</script>
+</head>
+<body>
+
+<header class="top-header">
+    <div class="topbar-stars" aria-hidden="true"></div>
+        <div class="brand">
+            <div class="brand-logo">
+                <img src="logo.png" alt="CHRONOMUSE logo">
+            </div>
+            <div class="brand-text">
+                <div class="brand-title">CHRONOMUSE</div>
+                <div class="brand-subtitle">Remember your days</div>
+            </div>
+        </div>
+    <div class="header-actions">
+        <div class="auth-buttons">
+            <button type="button" class="action-btn mood-tracker-btn" id="moodTrackerBtn">Mood Graph</button>
+        </div>
+    </div>
+</header>
+
+<div id="floatingSparkLayer" aria-hidden="true"></div>
+
+<div id="moodTrackerModal" class="modal">
+    <div class="modal-content mood-tracker-content">
+        <div class="modal-stars" aria-hidden="true"></div>
+        <span class="close-btn" id="moodTrackerCloseBtn">&times;</span>
+        <div class="modal-header mood-tracker-header">
+            <h2 id="moodTrackerTitle">This Week</h2>
+            <div class="mood-tracker-controls">
+                <button type="button" class="mood-range-btn is-active" data-range="this_week">This Week</button>
+                <button type="button" class="mood-range-btn" data-range="last_week">Last Week</button>
+                <button type="button" class="mood-range-btn" data-range="this_month">This Month</button>
+            </div>
+        </div>
+        <div class="mood-tracker-sub" id="moodTrackerSub"></div>
+        <div class="mood-tracker-body">
+            <div class="mood-tracker-chart">
+                <canvas id="moodTrackerCanvas" width="640" height="320"></canvas>
+            </div>
+            <div class="mood-tracker-legend" id="moodTrackerLegend"></div>
+        </div>
+    </div>
+</div>
+
+<div class="welcome-user welcome-float">Welcome to CHRONOMUSE!</div>
+
+<div class="container">
+
+        <!-- PINNED CARD -->
+    <div class="card" id="pinnedCard">
+        <div class="pinned-header">
+            <h2 class="pinned-title"><span class="pin-icon" aria-hidden="true"></span>Pinned</h2>
+
+        </div>
+        <div id="pinnedList" class="pinned-list">
+            <div class="pinned-empty">No pinned memories yet.</div>
+        </div>
+    </div>
+<!-- CALENDAR CARD -->
+    <div class="card" id="calendarCard">
+<div class="calendar-header">
+    <button class="nav-btn" id="prevMonth">‹</button>
+    <button class="today-btn today-btn-small" id="todayBtn" type="button">Today</button>
+    <h2 id="currentMonth">◦ January 2025</h2>
+    <button class="nav-btn" id="nextMonth">›</button>
+</div>
+        <div class="calendar-filter">
+            <label for="calendarTagFilter">Filter Tag:</label>
+            <select id="calendarTagFilter">
+                <option value="all">All</option>
+                <option value="general">General</option>
+                <option value="birthday">Birthday</option>
+                <option value="anniversary">Anniversary</option>
+                <option value="holiday">Holiday</option>
+                <option value="travel">Travel</option>
+                <option value="food">Food</option>
+                <option value="family">Family</option>
+                <option value="friends">Friends</option>
+                <option value="work">Work</option>
+                <option value="special">Special</option>
+            </select>
+            <label for="calendarReactionFilter">Reaction:</label>
+            <select id="calendarReactionFilter">
+                <option value="all">All</option>
+                <option value="❤️">❤️</option>
+                <option value="😮">😮</option>
+                <option value="😂">😂</option>
+                <option value="😡">😡</option>
+            </select>
+        </div>
+        <div class="calendar" id="calendar"></div>
+    </div>
+
+    <!-- MEMORY MODAL -->
+    <div id="memoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-stars" aria-hidden="true"></div>
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalTitle">Memories</h2>
+            </div>
+            <div id="modalMemories"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Sample data for demo
+const sampleMemories = {
+    "2025-01-15": {
+        date: "2025-01-15",
+        text: "Had a great day at the park with friends!",
+        tag: "friends",
+        mood: "happy",
+        reaction: "❤️"
+    },
+    "2025-01-20": {
+        date: "2025-01-20",
+        text: "Family dinner was amazing.",
+        tag: "family",
+        mood: "grateful",
+        reaction: "😊"
+    }
+};
+
+const sampleMoodData = {
+    this_week: {
+        labels: ["Happy", "Calm", "Excited"],
+        counts: [5, 3, 2],
+        colors: ["#ff69b4", "#ffb6c1", "#ff1493"]
+    },
+    last_week: {
+        labels: ["Happy", "Sad", "Motivated"],
+        counts: [4, 1, 3],
+        colors: ["#ff69b4", "#ffb6c1", "#ff1493"]
+    },
+    this_month: {
+        labels: ["Happy", "Calm", "Grateful", "Excited"],
+        counts: [10, 5, 4, 3],
+        colors: ["#ff69b4", "#ffb6c1", "#ff1493", "#bfa6ff"]
+    }
+};
+
+const calendarEl = document.getElementById("calendar");
+const currentMonthEl = document.getElementById("currentMonth");
+const themeToggle = document.getElementById("themeToggle");
+const moodTrackerBtn = document.getElementById("moodTrackerBtn");
+const moodTrackerModal = document.getElementById("moodTrackerModal");
+const moodTrackerCloseBtn = document.getElementById("moodTrackerCloseBtn");
+const moodTrackerCanvas = document.getElementById("moodTrackerCanvas");
+const moodTrackerLegend = document.getElementById("moodTrackerLegend");
+const moodRangeButtons = document.querySelectorAll(".mood-range-btn");
+const moodTrackerSub = document.getElementById("moodTrackerSub");
+const moodTrackerTitle = document.getElementById("moodTrackerTitle");
+
+let currentDate = new Date();
+let currentYear = currentDate.getFullYear();
+let currentMonth = currentDate.getMonth();
+
+function applyTheme(theme) {
+    const isDark = theme === "dark";
+    document.documentElement.classList.toggle("dark", isDark);
+    if (themeToggle) {
+        themeToggle.classList.toggle("is-dark", isDark);
+        themeToggle.setAttribute("aria-pressed", isDark ? "true" : "false");
+        themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+        themeToggle.setAttribute("title", isDark ? "Light mode" : "Dark mode");
+    }
+}
+
+const savedTheme = localStorage.getItem("cm_theme");
+applyTheme(savedTheme === "dark" ? "dark" : "light");
+
+if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+        const isDark = document.documentElement.classList.contains("dark");
+        const nextTheme = isDark ? "light" : "dark";
+        localStorage.setItem("cm_theme", nextTheme);
+        applyTheme(nextTheme);
+    });
+}
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+
+function updateCalendarHeader(){
+    currentMonthEl.innerText = `◦ ${monthNames[currentMonth]} ${currentYear}`;
+}
+
+function getDaysInMonth(year, month){
+    return new Date(year, month + 1, 0).getDate();
+}
+
+function generateCalendar(){
+    calendarEl.innerHTML = "";
+    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+    const weekdayLabels = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0=Sun
+    const startOffset = (firstDay + 6) % 7; // shift so Monday=0
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
+
+    // Weekday headers
+    weekdayLabels.forEach(label => {
+        const wd = document.createElement("div");
+        wd.className = "weekday";
+        wd.innerText = label;
+        calendarEl.appendChild(wd);
+    });
+
+    // Empty cells before first day
+    for (let i = 0; i < startOffset; i++) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        calendarEl.appendChild(empty);
+    }
+    
+    // Generate days
+    for(let i=1;i<=daysInMonth;i++){
+        const day = document.createElement("div");
+        day.className = "day";
+        day.innerText = i;
+        if (isCurrentMonth && i === today.getDate()) {
+            day.classList.add("today");
+        }
+        const dateKey = `${currentYear}-${currentMonth + 1}-${i}`;
+        if (sampleMemories[dateKey]) {
+            day.classList.add("has-memory");
+        }
+        day.onclick = () => selectDate(i, day);
+        calendarEl.appendChild(day);
+    }
+}
+
+function selectDate(day, dayEl) {
+    const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
+    if (sampleMemories[dateKey]) {
+        showMemoriesForDate(dateKey);
+    }
+}
+
+function showMemoriesForDate(dateKey) {
+    const memory = sampleMemories[dateKey];
+    if (!memory) return;
+
+    const modal = document.getElementById("memoryModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalMemories = document.getElementById("modalMemories");
+
+    modalTitle.innerText = `Memories for ${formatDateLong(dateKey)}`;
+    modalMemories.innerHTML = `
+        <div class="memory-item">
+            <div class="memory-date">${formatDateLong(dateKey)}</div>
+            <div class="memory-text">${memory.text}</div>
+            <div class="memory-tags">
+                <span class="memory-tag">${memory.tag}</span>
+            </div>
+            <div class="memory-reaction">${memory.reaction}</div>
+        </div>
+    `;
+
+    modal.style.display = "flex";
+    modal.classList.add("show");
+    document.body.classList.add("modal-open");
+}
+
+function closeModal() {
+    const modals = document.querySelectorAll(".modal");
+    modals.forEach(modal => {
+        modal.classList.remove("show");
+        modal.style.display = "none";
+    });
+    document.body.classList.remove("modal-open");
+}
+
+function formatDateLong(dateStr){
+    const parts = dateStr.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(n => Number.isNaN(n))) return dateStr;
+    const [y, m, d] = parts;
+    const monthName = monthNames[m - 1] || "";
+    return `${monthName} ${d}, ${y}`;
+}
+
+function changeMonth(direction){
+    currentMonth += direction;
+    if(currentMonth < 0){
+        currentMonth = 11;
+        currentYear--;
+    } else if(currentMonth > 11){
+        currentMonth = 0;
+        currentYear++;
+    }
+    updateCalendarHeader();
+    generateCalendar();
+}
+
+// Navigation buttons
+document.getElementById("prevMonth").onclick = () => changeMonth(-1);
+document.getElementById("nextMonth").onclick = () => changeMonth(1);
+if (document.getElementById("todayBtn")) {
+    document.getElementById("todayBtn").onclick = () => {
+        const t = new Date();
+        currentYear = t.getFullYear();
+        currentMonth = t.getMonth();
+        updateCalendarHeader();
+        generateCalendar();
+    };
+}
+
+// Initialize calendar
+updateCalendarHeader();
+generateCalendar();
+
+// Mood Tracker
+function openMoodTracker() {
+    if (!moodTrackerModal) return;
+    moodTrackerModal.style.display = "flex";
+    moodTrackerModal.classList.add("show");
+    document.body.classList.add("modal-open");
+    const range = getActiveMoodRange();
+    setMoodRange(range);
+    renderMoodTrackerChart(sampleMoodData[range]);
+}
+
+function closeMoodTracker() {
+    if (!moodTrackerModal) return;
+    moodTrackerModal.classList.remove("show");
+    moodTrackerModal.style.display = "none";
+    document.body.classList.remove("modal-open");
+}
+
+function getActiveMoodRange() {
+    const active = document.querySelector(".mood-range-btn.is-active");
+    return active ? active.getAttribute("data-range") : "this_week";
+}
+
+function setMoodRange(range) {
+    moodRangeButtons.forEach(btn => {
+        const isActive = btn.getAttribute("data-range") === range;
+        btn.classList.toggle("is-active", isActive);
+    });
+    if (moodTrackerSub) {
+        moodTrackerSub.textContent = "";
+    }
+    if (moodTrackerTitle) {
+        const label = range === "last_week" ? "Last Week" : range === "this_month" ? "This Month" : "This Week";
+        moodTrackerTitle.textContent = label;
+    }
+}
+
+function renderMoodTrackerChart(data) {
+    if (!moodTrackerCanvas) return;
+    const ctx = moodTrackerCanvas.getContext("2d");
+    const container = moodTrackerCanvas.parentElement;
+    const cssWidth = container ? container.clientWidth - 4 : 640;
+    const cssHeight = 360;
+    const dpr = window.devicePixelRatio || 1;
+    moodTrackerCanvas.width = cssWidth * dpr;
+    moodTrackerCanvas.height = cssHeight * dpr;
+    moodTrackerCanvas.style.width = `${cssWidth}px`;
+    moodTrackerCanvas.style.height = `${cssHeight}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const width = cssWidth;
+    const height = cssHeight;
+    ctx.clearRect(0, 0, width, height);
+
+    const labels = data.labels || [];
+    const counts = data.counts || [];
+    const colors = data.colors || [];
+
+    if (!labels.length) {
+        ctx.fillStyle = "#ff69b4";
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("No mood data.", width / 2, height / 2);
+        if (moodTrackerLegend) moodTrackerLegend.innerHTML = "";
+        return;
+    }
+
+    const total = counts.reduce((sum, v) => sum + v, 0);
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(width, height) / 2 - 24;
+    let startAngle = -Math.PI / 2;
+
+    counts.forEach((value, index) => {
+        if (value <= 0) return;
+        const sliceAngle = (value / total) * Math.PI * 2;
+        const endAngle = startAngle + sliceAngle;
+        const color = colors[index] || "rgba(255,105,180,0.85)";
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 4;
+        ctx.fillStyle = color;
+        ctx.fill();
+        const grad = ctx.createRadialGradient(centerX, centerY, radius * 0.15, centerX, centerY, radius);
+        grad.addColorStop(0, "rgba(255,255,255,0.22)");
+        grad.addColorStop(0.6, "rgba(255,255,255,0.08)");
+        grad.addColorStop(1, "rgba(0,0,0,0.2)");
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        const midAngle = (startAngle + endAngle) / 2;
+        const labelRadius = radius * 0.72;
+        const labelX = centerX + Math.cos(midAngle) * labelRadius;
+        const labelY = centerY + Math.sin(midAngle) * labelRadius;
+        const pct = Math.round((value / total) * 100);
+        if (pct >= 1) {
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "12px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(`${labels[index]} ${pct}%`, labelX, labelY);
+        }
+
+        startAngle = endAngle;
+    });
+
+    if (moodTrackerLegend) {
+        moodTrackerLegend.innerHTML = labels.map((label, idx) => {
+            const color = colors[idx] || "rgba(255,105,180,0.8)";
+            const count = counts[idx] || 0;
+            return `
+                <div class="mood-legend-card" data-index="${idx}">
+                    <span class="mood-legend-dot" style="background:${color};"></span>
+                    <span class="mood-legend-label">${label}</span>
+                    <span class="mood-legend-count">${count}</span>
+                </div>
+            `;
+        }).join("");
+    }
+}
+
+// Event listeners
+moodTrackerBtn.addEventListener("click", openMoodTracker);
+moodTrackerCloseBtn.addEventListener("click", closeMoodTracker);
+
+moodRangeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        const range = btn.getAttribute("data-range");
+        setMoodRange(range);
+        renderMoodTrackerChart(sampleMoodData[range]);
+    });
+});
+
+// Close modals when clicking outside
+window.addEventListener("click", (event) => {
+    if (event.target.classList.contains("modal")) {
+        closeModal();
+    }
+});
+</script>
+
+</body>
+</html>
